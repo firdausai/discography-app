@@ -1,0 +1,57 @@
+.no-padding {
+    padding: 0 !important;
+}
+
+.no-margin {
+    margin: 0 !important;
+}
+
+.jumbotron {
+    padding: 10rem 2rem !important;
+}
+
+.input-lg {
+    height: 8vh !important;
+    font-size: calc(1.26rem + 0.12vw) !important;
+}
+
+.card-columns > .card > img, .carousel-item > img {
+    object-fit: contain !important;
+}
+
+.card-body {
+    padding: 0.75rem !important;
+}
+
+.thumbnail {
+    width: 64px !important;
+    height: 64px !important;
+}
+
+.carousel-item > img {
+    object-fit: contain !important;
+}
+
+.height-35-vh {
+    height: 35vh !important;
+}
+
+.shadow-sm-top {
+    box-shadow: 0 -.125rem .25rem rgba(0,0,0,.075) !important
+}
+
+.shadow-sm-left {
+    box-shadow: -.050rem .125rem .25rem rgba(0,0,0,.125) !important
+}
+
+.gray-background {
+    background-color: #F9F9F9 ;
+}
+
+.card-footer {
+    background-color: transparent !important;
+}
+
+#pictures > .row > div:nth-child(n+5) {
+    margin-top: 0.5rem !important;
+}

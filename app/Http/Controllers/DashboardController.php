@@ -44,7 +44,7 @@ class DashboardController extends Controller
         } catch (Throwable $e) {
             abort(404);
         }
-        
+        // dd($response);
         return view('pages.dashboard')->with($response);
     }
 
@@ -94,7 +94,7 @@ class DashboardController extends Controller
             abort(404);
         }
 
-        return redirect('dashboard')->with('status', true)->with('currentAlbum', $payload['album_id']);
+        return redirect('dashboard')->with('statusSongAdd', true)->with('currentAlbum', $payload['album_id']);
     }
 
     /**
@@ -153,14 +153,14 @@ class DashboardController extends Controller
     public function updateAlbumInfo(editAlbumInfo $request)
     {
         $payload = $request->validated();
-
+        // dd($payload);
         try {
             $response = $this->albumService->updateAlbumInfo($payload);
         } catch (Throwable $e) {
             abort(404);
         }
-
-        return redirect('dashboard')->with('status', true)->with('currentAlbum', $response['album_id']);
+        // dd($response);
+        return redirect('dashboard')->with('statusInfoUpdate', true)->with('currentAlbum', $response['album_id']);
     }
 
     /**
@@ -180,7 +180,7 @@ class DashboardController extends Controller
             abort(404);
         }
         
-        return redirect('dashboard')->with('status', true)->with('currentAlbum', $response['album_id']);
+        return redirect('dashboard')->with('statusSongUpdate', true)->with('currentAlbum', $response['album_id']);
     }
 
     /**
@@ -193,14 +193,14 @@ class DashboardController extends Controller
     public function updateAlbumCover(editAlbumCover $request)
     {
         $payload = $request->validated();
-        
+        // dd($payload);
         try {
             $response = $this->albumService->editAlbumCover($payload);
         } catch (Throwable $e) {
             abort(404);
         }
         
-        return redirect('dashboard')->with('status', true)->with('currentAlbum', $payload['id']);
+        return redirect('dashboard')->with('statusCoverUpdate', true)->with('currentAlbum', $payload['id']);
     }
 
     /**
@@ -230,6 +230,91 @@ class DashboardController extends Controller
             abort(404);
         }
         
-        return redirect('dashboard')->with('status', true)->with('currentAlbum', $payload['album_id']);
+        return redirect('dashboard')->with('statusSongDelete', true)->with('currentAlbum', $payload['album_id']);
+    }
+
+    public function getAlbumName(Request $request)
+    {
+        $payload = $request->query();
+
+        $response = $this->albumService->getAlbumName($payload);
+        
+        return response()->json($response);
+    }
+
+    public function getRecordingCompany(Request $request)
+    {
+        $payload = $request->query();
+
+        $response = $this->albumService->getRecordingCompany($payload);
+        
+        return response()->json($response);
+    }
+
+    public function getSongTitle(Request $request)
+    {
+        $payload = $request->query();
+
+        $response = $this->albumService->getSongTitle($payload);
+        
+        return response()->json($response);
+    }
+
+    public function getSongWriter(Request $request)
+    {
+        $payload = $request->query();
+
+        $response = $this->albumService->getSongWriter($payload);
+        
+        return response()->json($response);
+    }
+
+    public function getSinger(Request $request)
+    {
+        $payload = $request->query();
+
+        $response = $this->albumService->getSinger($payload);
+        
+        return response()->json($response);
+    }
+
+    public function getArranger(Request $request)
+    {
+        $payload = $request->query();
+
+        $response = $this->albumService->getArranger($payload);
+        
+        return response()->json($response);
+    }
+
+    public function getBandLeader(Request $request)
+    {
+        $payload = $request->query();
+
+        $response = $this->albumService->getBandLeader($payload);
+        
+        return response()->json($response);
+    }
+
+    public function getBandName(Request $request)
+    {
+        $payload = $request->query();
+
+        $response = $this->albumService->getBandName($payload);
+        
+        return response()->json($response);
+    }
+
+    public function deleteAlbum(Request $request)
+    {
+        $payload = $request->all();
+        
+        try {
+            $this->albumService->deleteAlbum($payload);
+        } catch (Throwable $e) {
+            abort(404);
+        }
+        
+        return redirect('dashboard')->with('statusDeleteAlbum', true);
     }
 }

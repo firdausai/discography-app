@@ -1,12 +1,69 @@
 @extends('templates.dashboard')
 @section('content')
-    <section class = "shadow-sm-left container-fluid" style = "height: 100vh !important">
-        <div class="h-100 overflow-auto">
-            <div class="row mt-3 mx-2 justify-content-md-center">
+    <section class = " container-fluid">
+        <div class=" overflow-auto">
+            <ul class="nav nav-tabs mt-3">
+                <li role = "button" class="nav-item" data-content = "covers">
+                    <a class="nav-link active">Gambar</a>
+                </li>
+                <li role = "button" class="nav-item" data-content = "informations">
+                    <a class="nav-link">Informasi album</a>
+                </li>
+                <li role = "button" class="nav-item" data-content = "songs">
+                    <a class="nav-link">Lagu</a>
+                </li>
+                <li id = "delete-album-trigger" role = "button" class="nav-item" data-content = "delete" data-toggle="modal" data-target="#delete-album-modal">
+                    <a class="nav-link text-danger">Hapus album</a>
+                </li>
+            </ul>
+            <input type="hidden" id="album-id-hidden" name="album-id" value="{{ $albumDetail['id'] }}">
+            <div id = "target-covers" class="row mt-3 mx-2 justify-content-md-center">
                 <div class="col-12 col-sm-8">
                     @if (session('status') !== null)
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             <strong>Sukses!</strong> Album berhasil ditambah.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @elseif (session('statusSongAdd') !== null)
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>Sukses!</strong> Lagu berhasil ditambah.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @elseif (session('statusInfoUpdate') !== null)
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>Sukses!</strong> Informasi berhasil diubah.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @elseif (session('statusSongUpdate') !== null)
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>Sukses!</strong> Lagu berhasil diubah.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @elseif (session('statusCoverUpdate') !== null)
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>Sukses!</strong> Cover berhasil diubah.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @elseif (session('statusSongDelete') !== null)
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>Sukses!</strong> Lagu berhasil dihapus.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @elseif (session('statusDeleteAlbum') !== null)
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>Sukses!</strong> Album berhasil dihapus.
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -55,10 +112,10 @@
                     </div>
                 </div>
             </div>
-            <div class="row mt-3 mx-2 justify-content-md-center">
+            <div id = "target-informations" class="row mt-3 mx-2 justify-content-md-center d-none">
                 <div class="col-12 col-sm-8">
                     <div class="card">
-                        <form action="{{ url('/dashboard/edit-album-info') }}" method = "post">
+                        <form action="{{ url('/dashboard/edit-album-info') }}" method = "post" autocomplete="off">
                             @method('PUT')
                             @csrf
                             <div class="card-header">
@@ -69,8 +126,8 @@
                                     <div class="form-group col-md-6 dropdown">
                                         <label for="inputEmail4">Nama album</label>
                                         <input type="text" class="form-control" id="album-name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" name = "album_name" value = "{{ ($albumDetail['title']) ? $albumDetail['title'] : null }}">
-                                        <div class="dropdown-menu dropdown-menu- w-100" aria-labelledby="album-name">
-                                            <h6 class="dropdown-header"></h6>
+                                        <div id = "dropdown-album-name" class="dropdown-menu dropdown-menu w-100" aria-labelledby="album-name">
+                                            <h6 role = "button" class="dropdown-header dropdown-item-album-name">{{ ($albumDetail['title']) ? $albumDetail['title'] : null }}</h6>
                                         </div>
                                     </div>
                                     <div class="form-group col-md-6">
@@ -79,9 +136,12 @@
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="form-group col-md-12">
+                                    <div class="form-group col-md-12 dropdown">
                                         <label for="recording-studio-name">Perusahaan rekaman</label>
-                                        <input type="text" class="form-control" id="recording-studio-name" name = "recording_studio" value = "{{ ($albumDetail['recording_company']) ? $albumDetail['recording_company'] : null }}">
+                                        <input type="text" class="form-control" id="recording-studio-name" data-toggle="dropdown" name = "recording_studio" value = "{{ ($albumDetail['recording_company']) ? $albumDetail['recording_company'] : null }}">
+                                        <div id = "dropdown-recording-studio" class="dropdown-menu dropdown-menu w-100" aria-labelledby="recording-studio">
+                                            <h6 role = "button" class="dropdown-header dropdown-item-recording-studio">{{ ($albumDetail['recording_company']) ? $albumDetail['recording_company'] : null }}</h6>
+                                        </div>
                                     </div>
                                 </div>
                                 <label for="album-description">Deskripsi album</label>
@@ -94,7 +154,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row my-3 mx-2 justify-content-md-center">
+            <div id = "target-songs" class="row my-3 mx-2 justify-content-md-center d-none">
                 <div class="col-12 col-sm-8">
                     <div class="card">
                         <div class="card-header">
@@ -103,7 +163,7 @@
                         <div class="card-body">
                             <div class="accordion" id="accordionExample">
                                 <div class="card">
-                                    <form action="{{ url('/dashboard/store-song') }}" method = "post" enctype="multipart/form-data">
+                                    <form action="{{ url('/dashboard/store-song') }}" method = "post" enctype="multipart/form-data" autocomplete="off">
                                         @csrf
                                         <div class="card-header" id="headingOne" role = "button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                             <span class = "text-left">Tambah lagu</span>
@@ -116,33 +176,51 @@
                                                         <label for="song-index">#</label>
                                                         <input type="text" class="form-control" id="song-index" name = "song_index">
                                                     </div>
-                                                    <div class="form-group col-md-5">
+                                                    <div class="form-group col-md-5 dropdown">
                                                         <label for="song-title">Judul lagu</label>
-                                                        <input type="text" class="form-control" id="song-title" name = "song_title">
+                                                        <input type="text" class="form-control" id="song-title" name = "song_title" data-toggle="dropdown">
+                                                        <div id = "dropdown-song-title" class="dropdown-menu dropdown-menu w-100" aria-labelledby="song-title">
+                                                            <h6 role = "button" class="dropdown-header dropdown-item-song-title"></h6>
+                                                        </div>
                                                     </div>
-                                                    <div class="form-group col-md-6">
+                                                    <div class="form-group col-md-6 dropdown">
                                                         <label for="song-writer">Nama pencipta lagu</label>
-                                                        <input type="text" class="form-control" id="song-writer" name = "song_writer">
+                                                        <input type="text" class="form-control" id="song-writer" name = "song_writer" data-toggle="dropdown">
+                                                        <div id = "dropdown-song-writer" class="dropdown-menu dropdown-menu w-100" aria-labelledby="song-writer">
+                                                            <h6 role = "button" class="dropdown-header dropdown-item-song-writer"></h6>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="form-row">
-                                                    <div class="form-group col-md-6">
+                                                    <div class="form-group col-md-6 dropdown">
                                                         <label for="singer">Nama penyanyi lagu</label>
-                                                        <input type="text" class="form-control" id="singer" name = "singer">
+                                                        <input type="text" class="form-control" id="singer" name = "singer" data-toggle="dropdown">
+                                                        <div id = "dropdown-singer" class="dropdown-menu dropdown-menu w-100" aria-labelledby="singer">
+                                                            <h6 role = "button" class="dropdown-header dropdown-item-singer"></h6>
+                                                        </div>
                                                     </div>
-                                                    <div class="form-group col-md-6">
+                                                    <div class="form-group col-md-6 dropdown">
                                                         <label for="arranger">Nama arranger lagu</label>
-                                                        <input type="text" class="form-control" id="arranger" name = "arranger">
+                                                        <input type="text" class="form-control" id="arranger" name = "arranger" data-toggle="dropdown">
+                                                        <div id = "dropdown-arranger" class="dropdown-menu dropdown-menu w-100" aria-labelledby="arranger">
+                                                            <h6 role = "button" class="dropdown-header dropdown-item-arranger"></h6>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="form-row">
-                                                    <div class="form-group col-md-6">
+                                                    <div class="form-group col-md-6 dropdown">
                                                         <label for="band-leader">Nama pemimpin band</label>
-                                                        <input type="text" class="form-control" id="band-leader" name = "band_leader">
+                                                        <input type="text" class="form-control" id="band-leader" name = "band_leader" data-toggle="dropdown">
+                                                        <div id = "dropdown-band-leader" class="dropdown-menu dropdown-menu w-100" aria-labelledby="band-leader">
+                                                            <h6 role = "button" class="dropdown-header dropdown-item-band-leader"></h6>
+                                                        </div>
                                                     </div>
-                                                    <div class="form-group col-md-6">
+                                                    <div class="form-group col-md-6 dropdown">
                                                         <label for="band-name">Nama band lagu</label>
-                                                        <input type="text" class="form-control" id="band-name" name = "band_name">
+                                                        <input type="text" class="form-control" id="band-name" name = "band_name" data-toggle="dropdown">
+                                                        <div id = "dropdown-band-name" class="dropdown-menu dropdown-menu w-100" aria-labelledby="band-name">
+                                                            <h6 role = "button" class="dropdown-header dropdown-item-band-name"></h6>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="custom-file">
@@ -231,33 +309,55 @@
                                 <label for="song-index">#</label>
                                 <input type="text" class="form-control" id="edit-song-index" name = "edit_song_index">
                             </div>
-                            <div class="form-group col-md-10">
+                            <div class="form-group col-md-5 dropdown">
                                 <label for="song-title">Judul lagu</label>
-                                <input type="text" class="form-control" id="edit-song-title" name = "edit_song_title">
+                                <input type="text" class="form-control" id="edit-song-title" name = "edit_song_title" data-toggle="dropdown">
+                                <div id = "dropdown-edit-song-title" class="dropdown-menu dropdown-menu w-100" aria-labelledby="song-title">
+                                    <h6 role = "button" class="dropdown-header dropdown-item-edit-song-title"></h6>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-5 dropdown">
+                                <label for="song-writer">Nama pencipta lagu</label>
+                                <input type="text" class="form-control" id="edit-song-writer" name = "edit_song_writer" data-toggle="dropdown">
+                                <div id = "dropdown-edit-song-writer" class="dropdown-menu dropdown-menu w-100" aria-labelledby="song-writer">
+                                    <h6 role = "button" class="dropdown-header dropdown-item-edit-song-writer"></h6>
+                                </div>
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-6 dropdown">
                                 <label for="singer">Nama penyanyi lagu</label>
-                                <input type="text" class="form-control" id="edit-singer" name = "edit_singer">
+                                <input type="text" class="form-control" id="edit-singer" name = "edit_singer" data-toggle="dropdown">
+                                <div id = "dropdown-edit-singer" class="dropdown-menu dropdown-menu w-100" aria-labelledby="singer">
+                                    <h6 role = "button" class="dropdown-header dropdown-item-edit-singer"></h6>
+                                </div>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-6 dropdown">
                                 <label for="arranger">Nama arranger lagu</label>
-                                <input type="text" class="form-control" id="edit-arranger" name = "edit_arranger">
+                                <input type="text" class="form-control" id="edit-arranger" name = "edit_arranger" data-toggle="dropdown">
+                                <div id = "dropdown-edit-arranger" class="dropdown-menu dropdown-menu w-100" aria-labelledby="arranger">
+                                    <h6 role = "button" class="dropdown-header dropdown-item-edit-arranger"></h6>
+                                </div>
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-6 dropdown">
                                 <label for="band-leader">Nama pemimpin band</label>
-                                <input type="text" class="form-control" id="edit-band-leader" name = "edit_band_leader">
+                                <input type="text" class="form-control" id="edit-band-leader" name = "edit_band_leader" data-toggle="dropdown">
+                                <div id = "dropdown-edit-band-leader" class="dropdown-menu dropdown-menu w-100" aria-labelledby="band-leader">
+                                    <h6 role = "button" class="dropdown-header dropdown-item-edit-band-leader"></h6>
+                                </div>
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="band-name">Nama band lagu</label>
-                                <input type="text" class="form-control" id="edit-band-name" name = "edit_band_name">
+                                <input type="text" class="form-control" id="edit-band-name" name = "edit_band_name" data-toggle="dropdown">
+                                <div id = "dropdown-edit-band-name" class="dropdown-menu dropdown-menu w-100" aria-labelledby="band-name">
+                                    <h6 role = "button" class="dropdown-header dropdown-item-edit-band-name"></h6>
+                                </div>
                             </div>
                         </div>
                         <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="edit-audio-file" name = "edit_audio_file">
+                            <input type="file" class="custom-file-input" id="edit-audio-file" name = "edit_audio_file" data-toggle="dropdown">
                             <label class="custom-file-label" for="customFile" id = "edit-audio-file-label">File audio</label>
                         </div>
                     </div>
@@ -270,6 +370,27 @@
                 </form>
             </div>
         </div>
+    </div>
+    <div class="modal fade" id="delete-album-modal" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <form action="{{ url('dashboard/delete-album') }}" method = "POST">
+            @csrf
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Hapus Album</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah anda yakin ingin menghapus album ini?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" id = "delete-album-btn" name = "id" class="btn btn-danger">Hapus</button>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
     <div class="modal fade" id="create-album" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -335,51 +456,6 @@
                             <textarea class="form-control" id="album-description" rows = "5" name = "album-description"></textarea>
                         </div>
                     </div>
-                    <!-- <div class="card">
-                        <div class="card-header" id="headingOne" role = "button">
-                            <span class = "text-left">Tambah lagu</span>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-row">
-                                <div class="form-group col-md-1">
-                                    <label for="song-index">#</label>
-                                    <input type="text" class="form-control" id="song-index" name = "song-index">
-                                </div>
-                                <div class="form-group col-md-5">
-                                    <label for="song-title">Judul lagu</label>
-                                    <input type="text" class="form-control" id="song-title" name = "song-title">
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="song-writer">Nama pencipta lagu</label>
-                                    <input type="text" class="form-control" id="song-writer" name = "song-writer">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label for="singer">Nama penyanyi lagu</label>
-                                    <input type="text" class="form-control" id="singer" name = "singer">
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="arranger">Nama arranger lagu</label>
-                                    <input type="text" class="form-control" id="arranger" name = "arranger">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label for="band-leader">Nama pemimpin band</label>
-                                    <input type="text" class="form-control" id="band-leader" name = "band-leader">
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="band-name">Nama band lagu</label>
-                                    <input type="text" class="form-control" id="band-name" name = "band-name">
-                                </div>
-                            </div>
-                            <div class="custom-file">
-                                <input type="file" class="custom-file-input" id="customFile" name = "audio-file">
-                                <label class="custom-file-label" for="customFile">File audio</label>
-                            </div>
-                        </div>
-                    </div> -->
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Tambah album</button>

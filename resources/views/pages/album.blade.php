@@ -56,11 +56,16 @@
                 </div>
             </div>
             <div class="container mt-5">
+                <form id = "download-song" action="{{ url('album/download') }}" method = "GET">
+                    <input type="hidden" id="filename" name="filename" value="">
                 @foreach ($album['songs'] as $song)
                     @if ($loop->first)
-                        <div class="card shadow-sm" data-id = "{{ $song['id'] }}">
+                        <div class="card shadow-sm" data-id = "{{ $song['id'] }}" data-index = "{{ $loop->iteration }}">
                             <div class="card-body">
                                 <div class="row py-2 px-2">
+                                    <div id = "{{ 'song-'.$loop->iteration }}" class="col-md-1 col-12 pt-3 pt-md-0 text-center my-auto h4 song-list-play-btn" role = "button" data-name = "{{ $song['title']['song_title'] }}" data-id = "{{ $song['id'] }}" data-name = "{{ $song['title']['song_title'] }}" data-path = "{{ $song['audio_path'] }}">
+                                        <span role = "button "><i class="fas fa-play-circle"></i></span>
+                                    </div>
                                     <div class="col-md-1 col-12 my-auto">
                                         <p class = "card-subtitle text-muted"><small>Track</small></p>
                                         <p class = "card-text h6">{{ $song['index'] }}</p>
@@ -73,7 +78,7 @@
                                         <p class = "card-subtitle text-muted"><small>Penyanyi</small></p>
                                         <p class = "card-text h6">{{ $song['singer']['singer'] }}</p>
                                     </div>
-                                    <div class="col-md-3 col-6 pt-3 pt-md-0 my-auto">
+                                    <div class="col-md-2 col-6 pt-3 pt-md-0 my-auto">
                                         <p class = "card-subtitle text-muted"><small>Band</small></p>
                                         <p class = "card-text h6">{{ $song['band']['band'] }}</p>
                                     </div>
@@ -81,16 +86,19 @@
                                         <p class = "card-subtitle text-muted"><small>Pencipta</small></p>
                                         <p class = "card-text h6">{{ $song['arranger']['arranger'] }}</p>
                                     </div>
-                                    <div class="col-md-1 col-12 pt-3 pt-md-0 text-center my-auto h4 song-list-play-btn" role = "button" data-name = "{{ $song['title']['song_title'] }}" data-id = "{{ $song['id'] }}" data-name = "{{ $song['title']['song_title'] }}" data-path = "{{ $song['audio_path'] }}">
-                                        <span role = "button "><i class="fas fa-play-circle"></i></span>
-                                    </div>
+                                    <button class="col-md-auto col-12 pt-3 pt-md-0 text-center my-auto h4 download bg-transparent border-0 shadow-none" name = "download" value = "{{ $song['audio_path'] }}" role = "button" data-path = "{{ $song['audio_path'] }}" data-name = "{{ $song['title']['song_title'] }}">
+                                        <span role = "button "><i class="fas fa-download"></i></span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     @else
-                        <div class="card shadow-sm mt-4" data-id = "{{ $song['id'] }}">
+                        <div class="card shadow-sm mt-4" data-id = "{{ $song['id'] }}" data-index = "{{ $loop->iteration }}">
                             <div class="card-body">
                                 <div class="row py-2 px-2">
+                                    <div id = "{{ 'song-'.$loop->iteration }}" class="col-md-1 col-12 pt-3 pt-md-0 text-center my-auto h4 song-list-play-btn" role = "button" data-id = "{{ $song['id'] }}" data-name = "{{ $song['title']['song_title'] }}" data-path = "{{ $song['audio_path'] }}">
+                                        <span role = "button "><i class="fas fa-play-circle"></i></span>
+                                    </div>
                                     <div class="col-md-1 col-12 my-auto">
                                         <p class = "card-subtitle text-muted"><small>Track</small></p>
                                         <p class = "card-text h6">{{ $song['index'] }}</p>
@@ -103,7 +111,7 @@
                                         <p class = "card-subtitle text-muted"><small>Penyanyi</small></p>
                                         <p class = "card-text h6">{{ $song['singer']['singer'] }}</p>
                                     </div>
-                                    <div class="col-md-3 col-6 pt-3 pt-md-0 my-auto">
+                                    <div class="col-md-2 col-6 pt-3 pt-md-0 my-auto">
                                         <p class = "card-subtitle text-muted"><small>Band</small></p>
                                         <p class = "card-text h6">{{ $song['band']['band'] }}</p>
                                     </div>
@@ -111,16 +119,17 @@
                                         <p class = "card-subtitle text-muted"><small>Pencipta</small></p>
                                         <p class = "card-text h6">{{ $song['arranger']['arranger'] }}</p>
                                     </div>
-                                    <div class="col-md-1 col-12 pt-3 pt-md-0 text-center my-auto h4 song-list-play-btn" role = "button" data-id = "{{ $song['id'] }}" data-name = "{{ $song['title']['song_title'] }}" data-path = "{{ $song['audio_path'] }}">
-                                        <span role = "button "><i class="fas fa-play-circle"></i></span>
-                                    </div>
+                                    <button class="col-md-auto col-12 pt-3 pt-md-0 text-center my-auto h4 download bg-transparent border-0 shadow-none" name = "download" value = "{{ $song['audio_path'] }}" role = "button" data-path = "{{ $song['audio_path'] }}" data-name = "{{ $song['title']['song_title'] }}">
+                                        <span role = "button "><i class="fas fa-download"></i></span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     @endif
-                @endforeach
+                    @endforeach
+                </form>
             </div>
-            <audio controls preload="metadata">
+            <audio controls preload="metadata" class = "d-none">
                 <source src="" type="audio/mp3">
                 Your browser does not support the audio element.
             </audio>
@@ -131,13 +140,13 @@
             <div class="row h-100" style = "width: 100%">
                 <div class="col-4 col-sm-5 col-md-2 justify-content-center d-flex">
                     <div class="row">
-                        <div class="col align-self-center px-2">
+                        <div id = "previous-song" class="col align-self-center px-2">
                             <span role = "button"><i class="fas fa-step-backward h5"></i></span>
                         </div>
                         <div class="col align-self-center px-2" id = "play-song">
                             <span role = "button"><i class="far fa-play-circle h1"></i></span>
                         </div>
-                        <div class="col align-self-center px-2">
+                        <div id = "next-song" class="col align-self-center px-2">
                             <span role = "button"><i class="fas fa-step-forward h5"></i></span>
                         </div>
                     </div>
@@ -159,7 +168,7 @@
                         </div>
                     </div>
                     <div class="progress progress-volume" style="height: 10px;" role = "button">
-                        <div class="progress-bar progress-bar-volume" style="width: 0%" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar progress-bar-volume" style="width: 100%" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>
             </div>

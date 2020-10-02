@@ -49,4 +49,14 @@ class Song extends Model
     {
         return $this->hasOne('App\Singer', 'id', 'singer_id');
     }
+
+    public function songWriter()
+    {
+        return $this->hasOne('App\SongWriter', 'id', 'song_writer_id');
+    }
+
+    public function album()
+    {
+        return $this->belongsTo('App\Album', 'album_id', 'id');
+    }
 }

@@ -4,9 +4,12 @@
         <div class="jumbotron jumbotron-fluid bg-primary text-center" style = "background-image: url('/storage/web-images/indonesia.svg');background-size: 75%;background-repeat:no-repeat;background-position: center; ">
             <div class="container">
                 <div class="row justify-content-center">
-                    <div class="col">
+                    <div class="form-group col dropdown">
                         <h1 class="display-4 text-light font-weight-bold">Cari audio musik sunda <br> dengan mudah</h1>
-                        <input id = "search-bar" type="text" class="form-control input-lg mt-md-5 mt-3" aria-label="Text input with dropdown button">
+                        <input id = "search-bar" type="text" class="form-control input-lg mt-md-5 mt-3" aria-label="Text input with dropdown button" data-toggle="dropdown">
+                        <div id = "dropdown-search-bar" class="dropdown-menu w-100 overflow-auto" aria-labelledby="search-bar" style = "max-height: 250px">
+                            <!-- <h6 role = "button" class="dropdown-header dropdown-item-search-bar"></h6> -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -59,7 +62,7 @@
                 </div>
             </div>
         </div>
-        <div id = "landing-search-desktop" class="row d-none">
+        <!-- <div id = "landing-search-desktop" class="row d-none">
             <div class="col">
                 <h4>Album</h4>
                 <div class = "sideway-card-wrapper">
@@ -100,7 +103,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div id = "album-list-landing" class="card-columns">
             @foreach ($albums as $album)
                 <a href="{{ url('album/'.str_replace(' ', '-', $album['title'])) }}">
@@ -123,10 +126,12 @@
                 </a>
             @endforeach
         </div>
-        <div id = "load-button" class="row mt-4">
-            <div class="col text-center">
-            <button type="button" class="btn btn-primary btn-lg">Load Album</button>
+        @if ($total > 10)
+            <div id = "load-button" class="row mt-4">
+                <div class="col text-center">
+                    <button type="button" class="btn btn-primary btn-lg load-more" value = "10">Load Album</button>
+                </div>
             </div>
-        </div>
+        @endif
     </section>
 @stop

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
 use App\Modules\Album\AlbumService;
 use Illuminate\Http\Request;
 
@@ -43,6 +44,13 @@ class AlbumController extends Controller
         }
         // dd($response);
         return view('pages.album')->with('album', $response);
+    }
+
+    public function download(Request $request)
+    {
+        $payload = $request->all();
+        // dd($payload);
+        return response()->download(public_path(str_replace(asset(''), '', $payload['download'])), $payload['filename'].'.mp3');
     }
 
     /**

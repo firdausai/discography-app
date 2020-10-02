@@ -3,6 +3,7 @@
 namespace App\Modules\Album;
 
 use App\Modules\Album\AlbumRepository;
+use Illuminate\Support\Facades\Storage;
 use DB;
 
 class AlbumService
@@ -110,7 +111,14 @@ class AlbumService
             $bandLeader = $this->albumRepository->storeBandLeader($params);
 
             $params = [
+                'songWriter' => $payload['song_writer']
+            ];
+
+            $songWriter = $this->albumRepository->storeSongWriter($params);
+
+            $params = [
                 'album_id'          => $payload['album_id'],
+                'song_writer_id'    => $songWriter['id'],
                 'song_title_id'     => $songTitle['id'],
                 'arranger_id'       => $arranger['id'],
                 'singer_id'         => $singer['id'],
@@ -147,7 +155,7 @@ class AlbumService
 
     public function updateAlbumInfo($payload)
     {
-        DB::transaction(function () use ($payload) {
+        return DB::transaction(function () use ($payload) {
             $params = [
                 'title'                 => $payload['album_name'],
                 'recording_company'     => $payload['recording_studio'],
@@ -185,7 +193,7 @@ class AlbumService
             ];
 
             $song = $this->albumRepository->getSong($params);
-
+            
             if ($song['index'] !== (integer) $payload['edit_song_index']) {
                 $params = [
                     'id' => $payload['id'],
@@ -193,18 +201,45 @@ class AlbumService
                         ['index' => $payload['edit_song_index']]
                     ]
                 ];
-        
+                
                 $this->albumRepository->editSong($params);
             }
 
             $updates = [];
 
+            if ($song['songWriter']['song_writer'] !== $payload['edit_song_writer']) {
+                $params = [
+                    'songWriter' => $payload['edit_song_writer']
+                ];
+
+                $songWriter = $this->albumRepository->getSongWriterExact($params);
+                
+                if (!$songWriter) {
+                    $params = [
+                        'songWriter' => $payload['edit_song_writer']
+                    ];
+        
+                    $songWriter = $this->albumRepository->storeSongWriter($params);
+                }
+                
+                $updates['song_writer_id'] = $songWriter['id'];
+            }
+
             if ($song['title']['song_title'] !== $payload['edit_song_title']) {
                 $params = [
                     'songTitle' => $payload['edit_song_title']
                 ];
-    
-                $songTitle = $this->albumRepository->storeSongTitle($params);
+
+                $songTitle = $this->albumRepository->getSongTitleExact($params);
+
+                if (!$songTitle) {
+                    $params = [
+                        'songTitle' => $payload['edit_song_title']
+                    ];
+        
+                    $songTitle = $this->albumRepository->storeSongTitle($params);
+                }
+
                 $updates['song_title_id'] = $songTitle['id'];
             }
 
@@ -212,8 +247,17 @@ class AlbumService
                 $params = [
                     'singer' => $payload['edit_singer']
                 ];
-    
-                $singer = $this->albumRepository->storeSinger($params);
+
+                $singer = $this->albumRepository->getSingerExact($params);
+
+                if (!$singer) {
+                    $params = [
+                        'singer' => $payload['edit_singer']
+                    ];
+        
+                    $singer = $this->albumRepository->storeSinger($params);
+                }
+
                 $updates['singer_id'] = $singer['id'];
             }
 
@@ -221,8 +265,17 @@ class AlbumService
                 $params = [
                     'arranger' => $payload['edit_arranger']
                 ];
-    
-                $arranger = $this->albumRepository->storeArranger($params);
+
+                $arranger = $this->albumRepository->getArrangerExact($params);
+
+                if (!$arranger) {
+                    $params = [
+                        'arranger' => $payload['edit_arranger']
+                    ];
+        
+                    $arranger = $this->albumRepository->storeArranger($params);
+                }
+
                 $updates['arranger_id'] = $arranger['id'];
             }
 
@@ -230,8 +283,17 @@ class AlbumService
                 $params = [
                     'bandLeader' => $payload['edit_band_leader']
                 ];
-    
-                $bandLeader = $this->albumRepository->storeBandLeader($params);
+
+                $bandLeader = $this->albumRepository->getBandLeaderExact($params);
+
+                if (!$bandLeader) {
+                    $params = [
+                        'bandLeader' => $payload['edit_band_leader']
+                    ];
+        
+                    $bandLeader = $this->albumRepository->storeBandLeader($params);
+                }
+
                 $updates['band_leader_id'] = $bandLeader['id'];
             }
 
@@ -239,8 +301,17 @@ class AlbumService
                 $params = [
                     'band' => $payload['edit_band_name']
                 ];
-    
-                $band = $this->albumRepository->storeBand($params);
+
+                $band = $this->albumRepository->getBandNameExact($params);
+
+                if (!$band) {
+                    $params = [
+                        'band' => $payload['edit_band_name']
+                    ];
+        
+                    $band = $this->albumRepository->storeBand($params);
+                }
+
                 $updates['band_id'] = $band['id'];
             }
 
@@ -256,8 +327,10 @@ class AlbumService
                 'id' => $payload['id'],
                 'updates' => $updates,
             ];
-            
-            $this->albumRepository->editSong($params);
+            // dd($params);
+            if (count($params['updates']) !== 0) {
+                $this->albumRepository->editSong($params);
+            }
 
             return $song;
         });
@@ -310,7 +383,7 @@ class AlbumService
 
     public function getAlbums()
     {
-        return $this->albumRepository->getAllAlbums();
+        return [$this->albumRepository->getAllAlbums()->take(10), $this->albumRepository->getTotalAlbums()];
     }
 
     public function getAlbumDetail($payload)
@@ -324,5 +397,239 @@ class AlbumService
         ];
 
         return $this->albumRepository->getAlbumDetail($params);
+    }
+
+    public function getAlbumName($payload)
+    {
+        $params = [
+            'query' => '%'.$payload['name'].'%'
+        ];
+
+        return $this->albumRepository->getAlbumName($params);
+    }
+
+    public function getRecordingCompany($payload)
+    {
+        $params = [
+            'query' => '%'.$payload['name'].'%'
+        ];
+
+        return $this->albumRepository->getRecordingCompany($params);
+    }
+
+    public function getSongTitle($payload)
+    {
+        $params = [
+            'query' => '%'.$payload['name'].'%'
+        ];
+
+        return $this->albumRepository->getSongTitle($params);
+    }
+
+    public function getSongWriter($payload)
+    {
+        $params = [
+            'query' => '%'.$payload['name'].'%'
+        ];
+
+        return $this->albumRepository->getSongWriter($params);
+    }
+
+    public function getSinger($payload)
+    {
+        $params = [
+            'query' => '%'.$payload['name'].'%'
+        ];
+
+        return $this->albumRepository->getSinger($params);
+    }
+
+    public function getArranger($payload)
+    {
+        $params = [
+            'query' => '%'.$payload['name'].'%'
+        ];
+
+        return $this->albumRepository->getArranger($params);
+    }
+
+    public function getBandLeader($payload)
+    {
+        $params = [
+            'query' => '%'.$payload['name'].'%'
+        ];
+
+        return $this->albumRepository->getBandLeader($params);
+    }
+
+    public function getBandName($payload)
+    {
+        $params = [
+            'query' => '%'.$payload['name'].'%'
+        ];
+
+        return $this->albumRepository->getBandName($params);
+    }
+
+    public function getMatchingGlobalSearch($payload)
+    {
+        $params = [
+            'query' => '%'.$payload['name'].'%'
+        ];
+
+        $result = [];
+
+        $result['albumName'] = $this->albumRepository->getAlbumName($params)->pluck('title');
+        $result['recordingCompany'] = $this->albumRepository->getRecordingCompany($params)->pluck('recording_company');
+        $result['songTitle'] = $this->albumRepository->getSongTitle($params)->pluck('song_title');
+        $result['songWriter'] = $this->albumRepository->getSongWriter($params)->pluck('song_writer');
+        $result['singer'] = $this->albumRepository->getSinger($params)->pluck('singer');
+        $result['arranger'] = $this->albumRepository->getArranger($params)->pluck('arranger');
+        $result['bandLeader'] = $this->albumRepository->getBandLeader($params)->pluck('band_leader');
+        $result['band'] = $this->albumRepository->getBandName($params)->pluck('band');
+        $result['releasedDate'] = $this->albumRepository->getReleasedDate($params)->pluck('released_date');
+        
+        return $result;
+    }
+
+    public function getClickedCategory($payload)
+    {
+        // $params = [
+        //     'query'             => $payload['match'],
+        //     'albumName'         => $payload['category'] === 'albumName' ? true : false,
+        //     'recordingCompany'  => $payload['category'] === 'recordingCompany' ? true : false,
+        //     'songTitle'         => $payload['category'] === 'songTitle' ? true : false,
+        //     'songWriter'        => $payload['category'] === 'songWriter' ? true : false,
+        //     'singer'            => $payload['category'] === 'singer' ? true : false,
+        //     'arranger'          => $payload['category'] === 'arranger' ? true : false,
+        //     'bandLeader'        => $payload['category'] === 'bandLeader' ? true : false,
+        //     'releasedDate'      => $payload['category'] === 'releasedDate' ? true : false,
+        // ];
+
+        $params = [
+            'query' => $payload['match'],
+            'category' => $payload['category']
+        ];
+
+        $result = null;
+
+        if ($params['category'] === 'albumName' || $params['category'] === 'recordingCompany' || $params['category'] === 'releasedDate') {
+            if ($params['category'] === 'albumName') {
+                $result = $this->albumRepository->getAlbumName($params);
+            } else if ($params['category'] === 'recordingCompany') {
+                $result = $this->albumRepository->getRecordingCompany($params);
+            } else if ($params['category'] === 'releasedDate') {
+                $result = $this->albumRepository->getReleasedDate($params);           
+            }
+
+            $params = [
+                'condition' => []
+            ];
+
+            $params['condition'] = $result->map(function ($item, $key) use ($params) {
+                return $item['id'];
+            })->toArray();
+            
+            return $this->albumRepository->getAlbumsDetail($params);
+
+        } else {
+            $field = null;
+            if ($params['category'] === 'arranger') {
+                $result = $this->albumRepository->getArranger($params);
+                $field = 'arranger_id';
+            } else if ($params['category'] === 'band') {
+                $result = $this->albumRepository->getBandName($params);
+                $field = 'band_id';
+            } else if ($params['category'] === 'bandLeader') {
+                $result = $this->albumRepository->getBandLeader($params);
+                $field = 'band_leader_id';
+            } else if ($params['category'] === 'singer') {
+                $result = $this->albumRepository->getSinger($params);
+                $field = 'singer_id';
+            } else if ($params['category'] === 'songTitle') {
+                $result = $this->albumRepository->getSongTitle($params);
+                $field = 'song_title_id';
+            } else if ($params['category'] === 'songWriter') {
+                $result = $this->albumRepository->getSongWriter($params);
+                $field = 'song_writer_id';
+            }
+
+            $params = [
+                'field' => $field,
+                'condition' => []
+            ];
+
+            $params['condition'] = $result->map(function ($item, $key) use ($params) {
+                if (!in_array($item['id'], $params['condition'])) {
+                    return $item['id'];
+                }
+            })->toArray();
+
+            $ids = $params['condition'];
+            
+            $songs = $this->albumRepository->getSongs($params);
+            
+            $params = [
+                'condition' => []
+            ];
+
+            $params['condition'] = $songs->map(function ($item, $key) use ($params) {
+                if (!in_array($item['album_id'], $params['condition'])) {
+                    return $item['album_id'];
+                }
+            })->toArray();
+
+            $albums = $this->albumRepository->getAlbumsDetail($params);
+
+            $albums->each(function ($albumItem, $albumKey) use ($field, $ids) {
+                $albumItem['songs']->each(function ($item, $key) use ($field, $ids, $albumItem) {
+                    if (!in_array($item[$field], $ids)) {
+                        $albumItem['songs']->pull($key);
+                    }
+                })->toArray();
+            })->toArray();
+
+            return $albums->toArray();
+        }
+    }
+
+    public function getNextAlbums($payload)
+    {
+        $params = [
+            'skip' => $payload['row'],
+            'take' => $payload['row'] + 10
+        ];
+        // dd($params);
+        return [$this->albumRepository->getCertainAlbumsByIds($params), $this->albumRepository->getTotalAlbums()];
+    }
+
+    public function deleteAlbum($payload)
+    {
+        DB::transaction(function () use ($payload) {
+            $params = [
+                'field' => 'album_id',
+                'condition' => [$payload['id']]
+            ];
+            
+            $songs = $this->albumRepository->getSongs($params);
+            
+            $params = $songs->map(function ($item, $key) {
+                return $item['id'];
+            })->toArray();
+            
+            $this->albumRepository->deleteSongs($params);
+            
+            $params = [
+                $payload['id']
+            ];
+    
+            $this->albumRepository->deleteAlbumCoversByAlbumId($params);
+    
+            $params = [
+                $payload['id']
+            ];
+    
+            $this->albumRepository->deleteAlbum($params);
+        });
     }
 }

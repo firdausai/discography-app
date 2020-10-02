@@ -27,6 +27,7 @@ class editSong extends FormRequest
             'edit_song_index'   => 'nullable|integer',
             'edit_song_title'   => 'nullable|string',
             'edit_singer'       => 'nullable|string',
+            'edit_song_writer'  => 'nullable|string',
             'edit_arranger'     => 'nullable|string',
             'edit_band_leader'  => 'nullable|string',
             'edit_band_name'    => 'nullable|string',

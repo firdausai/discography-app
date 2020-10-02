@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SongTitle extends Model
+class SongWriter extends Model
 {
     /**
      * Indicates if the model should be timestamped.
@@ -12,9 +12,4 @@ class SongTitle extends Model
      * @var bool
      */
     public $timestamps = false;
-
-    public function song()
-    {
-        return $this->belongsTo('App\Song', 'id', 'song_title_id');
-    }
 }

@@ -3,6 +3,7 @@
 namespace App\Modules\Album;
 
 use App\AlbumCover;
+use App\songwriter;
 use App\BandLeader;
 use App\SongTitle;
 use App\Arranger;
@@ -22,6 +23,11 @@ class AlbumRepository
      * @var BandLeader
      */
     protected $bandLeader;
+
+    /**
+     * @var SongWriter
+     */
+    protected $songWriter;
 
     /**
      * @var SongTitle
@@ -63,6 +69,7 @@ class AlbumRepository
      */
     public function __construct(
         AlbumCover $albumCover,
+        SongWriter $songWriter,
         BandLeader $bandLeader,
         SongTitle $songTitle,
         Arranger $arranger,
@@ -72,6 +79,7 @@ class AlbumRepository
         Song $song
     ) {
         $this->albumCover = $albumCover;
+        $this->songWriter = $songWriter;
         $this->bandLeader = $bandLeader;
         $this->songTitle = $songTitle;
         $this->arranger = $arranger;
@@ -108,6 +116,20 @@ class AlbumRepository
             ->first();
     }
 
+    public function getAlbumsDetail($params)
+    {
+        return $this->album->with([
+            'covers',
+            'songs',
+            'songs.band',
+            'songs.title', 
+            'songs.singer',
+            'songs.arranger', 
+            'songs.bandLeader'
+            ])->whereIn('id', $params['condition'])
+            ->get();
+    }
+
     public function storeAlbum($params)
     {
         $album                      = new $this->album;
@@ -130,6 +152,7 @@ class AlbumRepository
         $song                  = new $this->song;
         $song->album_id        = $params['album_id'];
         $song->song_title_id   = $params['song_title_id'];
+        $song->song_writer_id  = $params['song_writer_id'];
         $song->arranger_id     = $params['arranger_id'];
         $song->singer_id       = $params['singer_id'];
         $song->band_id         = $params['band_id'];
@@ -186,6 +209,15 @@ class AlbumRepository
         return $bandLeader;
     }
 
+    public function storeSongWriter($params)
+    {
+        $songWriter                  = new $this->songWriter;
+        $songWriter->song_writer     = $params['songWriter'];
+        $songWriter->save();
+
+        return $songWriter;
+    }
+
     public function updateAlbumInfo($params)
     {
         $album                      = $this->album->where('id', $params['id'])->first();
@@ -205,9 +237,23 @@ class AlbumRepository
             'title', 
             'singer',
             'arranger', 
-            'bandLeader'
+            'bandLeader',
+            'songWriter'
             ])->where([$params['condition']])
             ->first();
+    }
+
+    public function getSongs($params)
+    {
+        return $this->song->with([
+            'band',
+            'title', 
+            'singer',
+            'arranger', 
+            'bandLeader',
+            'songWriter'
+            ])->whereIn($params['field'], $params['condition'])
+            ->get();
     }
 
     public function editSong($params)
@@ -225,5 +271,121 @@ class AlbumRepository
     public function deleteAlbumCovers($params)
     {
         $this->albumCover->whereIn('id', $params)->delete();
+    }
+
+    public function deleteAlbumCoversByAlbumId($params)
+    {
+        $this->albumCover->whereIn('album_id', $params)->delete();
+    }
+
+    public function deleteSongs($params)
+    {
+        $this->song->whereIn('id', $params)->delete();
+    }
+
+    public function getAlbumName($params)
+    {
+        return $this->album->where('title', 'like', $params['query'])->get();
+    }
+
+    public function getRecordingCompany($params)
+    {
+        return $this->album->where('recording_company', 'like', $params['query'])->get();
+    }
+
+    public function getSongTitle($params)
+    {
+        return $this->songTitle->where('song_title', 'like', $params['query'])->get();
+    }
+
+    public function getSongTitleExact($params)
+    {
+        return $this->songTitle->where('song_title', $params['songTitle'])->first();
+    }
+
+    public function getSongWriter($params)
+    {
+        return $this->songWriter->where('song_writer', 'like', $params['query'])->get();
+    }
+
+    public function getSongWriterExact($params)
+    {
+        return $this->songWriter->where('song_writer', $params['songWriter'])->first();
+    }
+
+    public function getSinger($params)
+    {
+        return $this->singer->where('singer', 'like', $params['query'])->get();
+    }
+
+    public function getSingerExact($params)
+    {
+        return $this->singer->where('singer', $params['singer'])->first();
+    }
+
+    public function getArranger($params)
+    {
+        return $this->arranger->where('arranger', 'like', $params['query'])->get();
+    }
+
+    public function getArrangerExact($params)
+    {
+        return $this->arranger->where('arranger', $params['arranger'])->first();
+    }
+
+    public function getBandLeader($params)
+    {
+        return $this->bandLeader->where('band_leader', 'like', $params['query'])->get();
+    }
+
+    public function getBandLeaderExact($params)
+    {
+        return $this->bandLeader->where('band_leader', $params['bandLeader'])->first();
+    }
+
+    public function getBandName($params)
+    {
+        return $this->band->where('band', 'like', $params['query'])->get();
+    }
+
+    public function getBandNameExact($params)
+    {
+        return $this->band->where('band', $params['band'])->first();
+    }
+
+    public function getReleasedDate($params)
+    {
+        return $this->album->where('released_date', 'like', $params['query'])->get();
+    }
+
+    public function findAlbum()
+    {
+        return $this->album->where('released_date', $params['query'])->get();
+    }
+
+    public function getCertainAlbumsByIds($params)
+    {
+        return $this->album->with([
+            'covers',
+            'songs',
+            'songs.band',
+            'songs.title', 
+            'songs.singer',
+            'songs.arranger', 
+            'songs.bandLeader'
+            ])
+            ->skip($params['skip'])
+            ->take($params['take'])
+            ->get();
+    }
+
+    public function getTotalAlbums()
+    {
+        return $this->album->count();
+    }
+
+    public function deleteAlbum($params)
+    {
+        $this->album->where('id', $params)->delete();
     }
 }

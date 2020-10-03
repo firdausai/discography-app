@@ -40,6 +40,10 @@ Route::put('/dashboard/edit-album-info', 'DashboardController@updateAlbumInfo');
 Route::post('/dashboard/edit-song', 'DashboardController@updateSong');
 Route::post('/dashboard/edit-album-cover', 'DashboardController@updateAlbumCover');
 Route::post('/dashboard/delete-album', 'DashboardController@deleteAlbum');
+
+
+
+Route::get('/dashboard/album/{albumName}', 'AlbumDashboardController@index');
 Route::delete('/dashboard/{$id}', 'DashboardController@destroy');
 
 //query
@@ -53,3 +57,6 @@ Route::get('/query/get-band-leader', 'DashboardController@getBandLeader');
 Route::get('/query/get-band-name', 'DashboardController@getBandName');
 Route::get('/query/get-matching-global-search', 'LandingController@getMatchingGlobalSearch');
 Route::get('/query/get-clicked-category', 'LandingController@getClickedCategory');
+
+//test
+Route::get('/test', 'DashboardController@index');

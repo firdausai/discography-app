@@ -159,6 +159,7 @@ class AlbumRepository
         $song->band_leader_id  = $params['band_leader_id'];
         $song->audio_path      = $params['audio_path'];
         $song->index           = $params['index'];
+        $song->total_download  = $params['total_download'];
         $song->save();
 
         return $song;
@@ -384,8 +385,23 @@ class AlbumRepository
         return $this->album->count();
     }
 
+    public function getTotalsongs()
+    {
+        return $this->song->count();
+    }
+
     public function deleteAlbum($params)
     {
         $this->album->where('id', $params)->delete();
+    }
+
+    public function addDownloadCount($params)
+    {
+        $this->song->where('id', $params['id'])->increment('total_download');
+    }
+
+    public function getAllSongs()
+    {
+        return $this->song->get();
     }
 }

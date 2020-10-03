@@ -15,10 +15,9 @@ $(document).on('click', '.song-info', function() {
         url:'/dashboard/get-song',
         data: { id : id },
         success : function(data) {
-            // console.log(data);
             $('#edit-song-index').val(data['index']);
             $('#edit-song-title').val(data['title']['song_title']);
-            $('#edit-song-writer').val(data['song_writer']['song_writer']);
+            $('#edit-song-writer').val((data['song_writer'] !== null) ? data['song_writer']['song_writer'] : ' ');
             $('#edit-singer').val(data['singer']['singer']);
             $('#edit-arranger').val(data['arranger']['arranger']);
             $('#edit-band-leader').val(data['band_leader']['band_leader']);
@@ -953,14 +952,19 @@ $(document).ready(function() {
             }
         }
 
-        if (($(this).data('content') === 'delete')) {
-            $('#delete-album-btn').val($('#album-id-hidden').val());
-            console.log($('#album-id-hidden').val());
-        }
+        // if (($(this).data('content') === 'delete')) {
+        //     $('#delete-album-btn').val($('#album-id-hidden').val());
+        //     console.log($('#album-id-hidden').val());
+        // }
+    });
+
+    $('.delete-album').click(function() {
+        $('#delete-album-btn').val($(this).data('value'));
     });
 
     $('.download').click(function(e) {
         $('#filename').val($(this).data('name'));
+        $('#song-id').val($(this).data('id'));
     });
 
     $('.load-more').click(function() {
@@ -984,7 +988,35 @@ $(document).ready(function() {
                 console.log(err);
             }
         });
-    })
+    });
+
+    $('#edit-audio-file').change(function() {
+        $('#edit-audio-file-label').text($(this)[0].files[0].name);
+    });
+
+    $('#add-song').change(function() {
+        $('#add-song-label').text($(this)[0].files[0].name);
+    });
+
+    $('#search-album-list-dashboard').keyup(function() {
+        let search = $(this).val();
+        let status = 0;
+        $('.testing').each(function(idx, obj) {
+            $(obj).find('.card-text').each(function(i, obj) {
+                if ($(obj).text().indexOf(search) >= 0) {
+                    if (status == 0) {
+                        $('#'+idx).removeClass('d-none');
+                        status = 1;
+                    }
+                } else {
+                    if (status == 0) {
+                        $('#'+idx).addClass('d-none');
+                    }
+                }
+            });
+            status = 0;
+        });
+    });
 });
 
 $(document).on('click', '.dropdown-item-album-name', function() {
@@ -1104,14 +1136,25 @@ $(document).on('click', '#pause-song', function() {
     song.pause();
 });
 
+var totalDelete = 0;
+
 $(document).on('click', '.img-thumbnail', function() {
     let id = $(this).data('id');
 
     if ($('#cover-'+ id).val() == '0' || $('#cover-'+ id).val() == 0) {
         $(this).parent().css('opacity', 0.2);
         $('#cover-'+ id).val(1);
+        totalDelete += 1;
     } else {
         $(this).parent().css('opacity', 1);
         $('#cover-'+ id).val(0);
+        totalDelete -= 1;
+    }
+
+    if (totalDelete == 0) {
+        $('#delete-indicator').addClass('d-none');
+    } else {
+        $('#delete-indicator').removeClass('d-none');
+        $('#delete-text').text('Hapus ' + totalDelete);
     }
 });

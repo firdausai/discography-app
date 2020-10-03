@@ -58,74 +58,75 @@
             <div class="container mt-5">
                 <form id = "download-song" action="{{ url('album/download') }}" method = "GET">
                     <input type="hidden" id="filename" name="filename" value="">
-                @foreach ($album['songs'] as $song)
-                    @if ($loop->first)
-                        <div class="card shadow-sm" data-id = "{{ $song['id'] }}" data-index = "{{ $loop->iteration }}">
-                            <div class="card-body">
-                                <div class="row py-2 px-2">
-                                    <div id = "{{ 'song-'.$loop->iteration }}" class="col-md-1 col-12 pt-3 pt-md-0 text-center my-auto h4 song-list-play-btn" role = "button" data-name = "{{ $song['title']['song_title'] }}" data-id = "{{ $song['id'] }}" data-name = "{{ $song['title']['song_title'] }}" data-path = "{{ $song['audio_path'] }}">
-                                        <span role = "button "><i class="fas fa-play-circle"></i></span>
+                    <input type="hidden" id="song-id" name="id" value="">
+                    @foreach ($album['songs'] as $song)
+                        @if ($loop->first)
+                            <div class="card shadow-sm" data-id = "{{ $song['id'] }}" data-index = "{{ $loop->iteration }}">
+                                <div class="card-body">
+                                    <div class="row py-2 px-2">
+                                        <div id = "{{ 'song-'.$loop->iteration }}" class="col-md-1 col-12 pt-3 pt-md-0 text-center my-auto h4 song-list-play-btn" role = "button" data-name = "{{ $song['title']['song_title'] }}" data-id = "{{ $song['id'] }}" data-name = "{{ $song['title']['song_title'] }}" data-path = "{{ $song['audio_path'] }}">
+                                            <span role = "button "><i class="fas fa-play-circle"></i></span>
+                                        </div>
+                                        <div class="col-md-1 col-12 my-auto">
+                                            <p class = "card-subtitle text-muted"><small>Track</small></p>
+                                            <p class = "card-text h6">{{ $song['index'] }}</p>
+                                        </div>
+                                        <div class="col-md-2 col-6 pt-3 pt-md-0 my-auto">
+                                            <p class = "card-subtitle text-muted"><small>Judul</small></p>
+                                            <p class = "card-text h6">{{ $song['title']['song_title'] }}</p>
+                                        </div>
+                                        <div class="col-md-3 col-6 pt-3 pt-md-0 my-auto">
+                                            <p class = "card-subtitle text-muted"><small>Penyanyi</small></p>
+                                            <p class = "card-text h6">{{ $song['singer']['singer'] }}</p>
+                                        </div>
+                                        <div class="col-md-2 col-6 pt-3 pt-md-0 my-auto">
+                                            <p class = "card-subtitle text-muted"><small>Band</small></p>
+                                            <p class = "card-text h6">{{ $song['band']['band'] }}</p>
+                                        </div>
+                                        <div class="col-md-2 col-6 pt-3 pt-md-0 my-auto">
+                                            <p class = "card-subtitle text-muted"><small>Pencipta</small></p>
+                                            <p class = "card-text h6">{{ $song['arranger']['arranger'] }}</p>
+                                        </div>
+                                        <button class="col-md-auto col-12 pt-3 pt-md-0 text-center my-auto h4 download bg-transparent border-0 shadow-none" name = "download" value = "{{ $song['audio_path'] }}" data-id = "{{ $song['id'] }}" role = "button" data-path = "{{ $song['audio_path'] }}" data-name = "{{ $song['title']['song_title'] }}">
+                                            <span role = "button "><i class="fas fa-download"></i></span>
+                                        </button>
                                     </div>
-                                    <div class="col-md-1 col-12 my-auto">
-                                        <p class = "card-subtitle text-muted"><small>Track</small></p>
-                                        <p class = "card-text h6">{{ $song['index'] }}</p>
-                                    </div>
-                                    <div class="col-md-2 col-6 pt-3 pt-md-0 my-auto">
-                                        <p class = "card-subtitle text-muted"><small>Judul</small></p>
-                                        <p class = "card-text h6">{{ $song['title']['song_title'] }}</p>
-                                    </div>
-                                    <div class="col-md-3 col-6 pt-3 pt-md-0 my-auto">
-                                        <p class = "card-subtitle text-muted"><small>Penyanyi</small></p>
-                                        <p class = "card-text h6">{{ $song['singer']['singer'] }}</p>
-                                    </div>
-                                    <div class="col-md-2 col-6 pt-3 pt-md-0 my-auto">
-                                        <p class = "card-subtitle text-muted"><small>Band</small></p>
-                                        <p class = "card-text h6">{{ $song['band']['band'] }}</p>
-                                    </div>
-                                    <div class="col-md-2 col-6 pt-3 pt-md-0 my-auto">
-                                        <p class = "card-subtitle text-muted"><small>Pencipta</small></p>
-                                        <p class = "card-text h6">{{ $song['arranger']['arranger'] }}</p>
-                                    </div>
-                                    <button class="col-md-auto col-12 pt-3 pt-md-0 text-center my-auto h4 download bg-transparent border-0 shadow-none" name = "download" value = "{{ $song['audio_path'] }}" role = "button" data-path = "{{ $song['audio_path'] }}" data-name = "{{ $song['title']['song_title'] }}">
-                                        <span role = "button "><i class="fas fa-download"></i></span>
-                                    </button>
                                 </div>
                             </div>
-                        </div>
-                    @else
-                        <div class="card shadow-sm mt-4" data-id = "{{ $song['id'] }}" data-index = "{{ $loop->iteration }}">
-                            <div class="card-body">
-                                <div class="row py-2 px-2">
-                                    <div id = "{{ 'song-'.$loop->iteration }}" class="col-md-1 col-12 pt-3 pt-md-0 text-center my-auto h4 song-list-play-btn" role = "button" data-id = "{{ $song['id'] }}" data-name = "{{ $song['title']['song_title'] }}" data-path = "{{ $song['audio_path'] }}">
-                                        <span role = "button "><i class="fas fa-play-circle"></i></span>
+                        @else
+                            <div class="card shadow-sm mt-4" data-id = "{{ $song['id'] }}" data-index = "{{ $loop->iteration }}">
+                                <div class="card-body">
+                                    <div class="row py-2 px-2">
+                                        <div id = "{{ 'song-'.$loop->iteration }}" class="col-md-1 col-12 pt-3 pt-md-0 text-center my-auto h4 song-list-play-btn" role = "button" data-id = "{{ $song['id'] }}" data-name = "{{ $song['title']['song_title'] }}" data-path = "{{ $song['audio_path'] }}">
+                                            <span role = "button "><i class="fas fa-play-circle"></i></span>
+                                        </div>
+                                        <div class="col-md-1 col-12 my-auto">
+                                            <p class = "card-subtitle text-muted"><small>Track</small></p>
+                                            <p class = "card-text h6">{{ $song['index'] }}</p>
+                                        </div>
+                                        <div class="col-md-2 col-6 pt-3 pt-md-0 my-auto">
+                                            <p class = "card-subtitle text-muted"><small>Judul</small></p>
+                                            <p class = "card-text h6">{{ $song['title']['song_title'] }}</p>
+                                        </div>
+                                        <div class="col-md-3 col-6 pt-3 pt-md-0 my-auto">
+                                            <p class = "card-subtitle text-muted"><small>Penyanyi</small></p>
+                                            <p class = "card-text h6">{{ $song['singer']['singer'] }}</p>
+                                        </div>
+                                        <div class="col-md-2 col-6 pt-3 pt-md-0 my-auto">
+                                            <p class = "card-subtitle text-muted"><small>Band</small></p>
+                                            <p class = "card-text h6">{{ $song['band']['band'] }}</p>
+                                        </div>
+                                        <div class="col-md-2 col-6 pt-3 pt-md-0 my-auto">
+                                            <p class = "card-subtitle text-muted"><small>Pencipta</small></p>
+                                            <p class = "card-text h6">{{ $song['arranger']['arranger'] }}</p>
+                                        </div>
+                                        <button class="col-md-auto col-12 pt-3 pt-md-0 text-center my-auto h4 download bg-transparent border-0 shadow-none" name = "download" value = "{{ $song['audio_path'] }}" data-id = "{{ $song['id'] }}" role = "button" data-path = "{{ $song['audio_path'] }}" data-name = "{{ $song['title']['song_title'] }}">
+                                            <span role = "button "><i class="fas fa-download"></i></span>
+                                        </button>
                                     </div>
-                                    <div class="col-md-1 col-12 my-auto">
-                                        <p class = "card-subtitle text-muted"><small>Track</small></p>
-                                        <p class = "card-text h6">{{ $song['index'] }}</p>
-                                    </div>
-                                    <div class="col-md-2 col-6 pt-3 pt-md-0 my-auto">
-                                        <p class = "card-subtitle text-muted"><small>Judul</small></p>
-                                        <p class = "card-text h6">{{ $song['title']['song_title'] }}</p>
-                                    </div>
-                                    <div class="col-md-3 col-6 pt-3 pt-md-0 my-auto">
-                                        <p class = "card-subtitle text-muted"><small>Penyanyi</small></p>
-                                        <p class = "card-text h6">{{ $song['singer']['singer'] }}</p>
-                                    </div>
-                                    <div class="col-md-2 col-6 pt-3 pt-md-0 my-auto">
-                                        <p class = "card-subtitle text-muted"><small>Band</small></p>
-                                        <p class = "card-text h6">{{ $song['band']['band'] }}</p>
-                                    </div>
-                                    <div class="col-md-2 col-6 pt-3 pt-md-0 my-auto">
-                                        <p class = "card-subtitle text-muted"><small>Pencipta</small></p>
-                                        <p class = "card-text h6">{{ $song['arranger']['arranger'] }}</p>
-                                    </div>
-                                    <button class="col-md-auto col-12 pt-3 pt-md-0 text-center my-auto h4 download bg-transparent border-0 shadow-none" name = "download" value = "{{ $song['audio_path'] }}" role = "button" data-path = "{{ $song['audio_path'] }}" data-name = "{{ $song['title']['song_title'] }}">
-                                        <span role = "button "><i class="fas fa-download"></i></span>
-                                    </button>
                                 </div>
                             </div>
-                        </div>
-                    @endif
+                        @endif
                     @endforeach
                 </form>
             </div>

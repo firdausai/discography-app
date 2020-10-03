@@ -49,7 +49,13 @@ class AlbumController extends Controller
     public function download(Request $request)
     {
         $payload = $request->all();
-        // dd($payload);
+        
+        try {
+            $this->albumService->downloadSong($payload);
+        } catch (Throwable $e) {
+            abort(404);
+        }
+
         return response()->download(public_path(str_replace(asset(''), '', $payload['download'])), $payload['filename'].'.mp3');
     }
 

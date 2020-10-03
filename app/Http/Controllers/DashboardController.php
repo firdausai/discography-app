@@ -45,7 +45,8 @@ class DashboardController extends Controller
             abort(404);
         }
         // dd($response);
-        return view('pages.dashboard')->with($response);
+        // return view('pages.dashboard')->with($response);
+        return view('pages.dashboard2')->with($response);
     }
 
     /**
@@ -94,7 +95,8 @@ class DashboardController extends Controller
             abort(404);
         }
 
-        return redirect('dashboard')->with('statusSongAdd', true)->with('currentAlbum', $payload['album_id']);
+        // return redirect('dashboard')->with('statusSongAdd', true)->with('currentAlbum', $payload['album_id']);
+        return back()->with('statusSongAdd', true)->with('currentAlbum', $payload['album_id']);
     }
 
     /**
@@ -159,8 +161,8 @@ class DashboardController extends Controller
         } catch (Throwable $e) {
             abort(404);
         }
-        // dd($response);
-        return redirect('dashboard')->with('statusInfoUpdate', true)->with('currentAlbum', $response['album_id']);
+
+        return redirect('dashboard/album/'.str_replace(' ', '-', $response['title']))->with('statusInfoUpdate', true)->with('currentAlbum', $response['album_id']);
     }
 
     /**
@@ -180,7 +182,8 @@ class DashboardController extends Controller
             abort(404);
         }
         
-        return redirect('dashboard')->with('statusSongUpdate', true)->with('currentAlbum', $response['album_id']);
+        // return redirect('dashboard')->with('statusSongUpdate', true)->with('currentAlbum', $response['album_id']);
+        return back()->with('statusSongUpdate', true)->with('currentAlbum', $response['album_id']);
     }
 
     /**
@@ -200,7 +203,8 @@ class DashboardController extends Controller
             abort(404);
         }
         
-        return redirect('dashboard')->with('statusCoverUpdate', true)->with('currentAlbum', $payload['id']);
+        // return redirect('dashboard')->with('statusCoverUpdate', true)->with('currentAlbum', $payload['id']);
+        return back()->with('statusCoverUpdate', true)->with('currentAlbum', $payload['id']);
     }
 
     /**
@@ -230,7 +234,8 @@ class DashboardController extends Controller
             abort(404);
         }
         
-        return redirect('dashboard')->with('statusSongDelete', true)->with('currentAlbum', $payload['album_id']);
+        // return redirect('dashboard')->with('statusSongDelete', true)->with('currentAlbum', $payload['album_id']);
+        return back()->with('statusSongDelete', true)->with('currentAlbum', $payload['album_id']);
     }
 
     public function getAlbumName(Request $request)

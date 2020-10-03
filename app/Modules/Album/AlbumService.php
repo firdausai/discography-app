@@ -37,10 +37,13 @@ class AlbumService
             ];
             
             $albumDetail = $this->albumRepository->getAlbumDetail($params);
-            
+
             return [
                 'albums'        => $albums->toArray(),
-                'albumDetail'   => $albumDetail->toArray()
+                'albumDetail'   => $albumDetail->toArray(),
+                'totalAlbums'   => $this->albumRepository->getTotalAlbums(),
+                'totalSongs'    => $this->albumRepository->getTotalsongs(),
+                'totalDownload' => $this->albumRepository->getAllSongs()->pluck('total_download')->sum()
             ];
         }
         
@@ -126,6 +129,7 @@ class AlbumService
                 'band_leader_id'    => $bandLeader['id'],
                 'audio_path'        => null,
                 'index'             => $payload['song_index'],
+                'total_download'    => 0
             ];
 
             if (isset($payload['audio_file'])) {
@@ -207,7 +211,7 @@ class AlbumService
 
             $updates = [];
 
-            if ($song['songWriter']['song_writer'] !== $payload['edit_song_writer']) {
+            if ($song['songWriter'] === null || $song['songWriter']['song_writer'] !== $payload['edit_song_writer']) {
                 $params = [
                     'songWriter' => $payload['edit_song_writer']
                 ];
@@ -631,5 +635,14 @@ class AlbumService
     
             $this->albumRepository->deleteAlbum($params);
         });
+    }
+
+    public function downloadSong($payload)
+    {
+        $params = [
+            'id' => $payload['id']
+        ];
+
+        $this->albumRepository->addDownloadCount($params);
     }
 }

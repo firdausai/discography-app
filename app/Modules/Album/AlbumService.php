@@ -48,8 +48,11 @@ class AlbumService
         }
         
         return [
-            'albums'        => null,
-            'albumDetail'   => null
+            'albums'        => [],
+            'albumDetail'   => null,
+            'totalAlbums'   => $this->albumRepository->getTotalAlbums(),
+            'totalSongs'    => $this->albumRepository->getTotalsongs(),
+            'totalDownload' => $this->albumRepository->getAllSongs()->pluck('total_download')->sum()
         ];
     }
 

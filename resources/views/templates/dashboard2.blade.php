@@ -22,7 +22,8 @@
         <nav class="navbar navbar-expand-md navbar-light bg-light sticky-top bg-secondary shadow-sm">
             <!-- <a role = "button" class = "h5 my-auto text-dark mr-3 d-block d-sm-none" data-toggle="collapse" data-target="#test"><i class="fas fa-bars"></i></a> -->
             <a class="navbar-brand" href="#">Dashboard</a>
-            <form class="form-inline ml-auto d-block d-sm-none">
+            <form action = "{{ url('/logout') }}" method = "POST" class="form-inline ml-auto d-block d-sm-none">
+                @csrf
                 <button class="btn btn-outline-danger my-2 my-sm-0 float-right" type="submit"><i class="fas fa-power-off align-middle mr-1"></i> Logout</button>
             </form>
             <div class="collapse navbar-collapse" id="test">
@@ -35,7 +36,8 @@
                     </li>
                 </ul>
             </div>
-            <form class="form-inline ml-auto d-none d-sm-block">
+            <form action = "{{ url('/logout') }}" method = "POST" class="form-inline ml-auto d-none d-sm-block">
+                @csrf
                 <button class="btn btn-outline-danger my-2 my-sm-0 float-right" type="submit"><i class="fas fa-power-off align-middle mr-1"></i> Logout</button>
             </form>
         </nav>
